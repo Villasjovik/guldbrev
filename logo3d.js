@@ -256,6 +256,9 @@ function initLogo3D(container) {
       shadowPlane.position.y = shadowYAbs != null
         ? parseFloat(shadowYAbs)
         : -fSize.y / 2 - 50 + yOffset;
+      // Exponera utfallet så flera loggor kan riktas in mot samma golv
+      container.dataset.computedShadowY = String(Math.round(shadowPlane.position.y));
+      container.dataset.computedLogoH = String(Math.round(fSize.y));
       // scale width to match logo, keep height proportional
       shadowPlane.scale.set(fSize.x / 380, 1, 1);
     }

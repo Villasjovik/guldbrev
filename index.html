@@ -737,6 +737,39 @@ box-shadow:
 .body-loaded .price-box.in .pi:nth-child(5){animation-delay:.46s}
 
 /* Per-paket Reach Boost — green "handle" container ABOVE the price-card. */
+
+/* LÅST META-RÄCKVIDD — paketen är prissatta i möte, toggeln ska inte kunna ändra dem */
+.pkg-boost.is-locked{
+  background:rgba(8,52,30,.30);
+  border-color:rgba(212,168,75,.10);
+  box-shadow:none;
+  cursor:not-allowed;
+}
+.pkg-boost.is-locked:hover{background:rgba(8,52,30,.30);border-color:rgba(212,168,75,.10)}
+.pkg-boost.is-locked .pkg-boost-head{pointer-events:none}
+.pkg-boost.is-locked .pkg-boost-text{opacity:.34;filter:saturate(.5)}
+.pkg-boost.is-locked .pkg-boost-switch{opacity:.28}
+.pkg-boost.is-locked .pkg-boost-body{display:none}
+.pkg-lock-stamp{
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%) rotate(-10.5deg);
+  pointer-events:none;z-index:6;
+  font-family:'Inter',sans-serif;font-weight:700;
+  font-size:clamp(13px,1.5vw,17px);letter-spacing:.22em;text-transform:uppercase;
+  color:#D2553B;
+  padding:7px 20px 8px;
+  border:2.5px solid #D2553B;border-radius:5px;
+  box-shadow:inset 0 0 0 1px rgba(210,85,59,.35);
+  opacity:.82;
+  white-space:nowrap;
+}
+@media(prefers-reduced-motion:no-preference){
+  .pkg-lock-stamp{animation:stampIn .5s cubic-bezier(.2,1.3,.4,1) both}
+}
+@keyframes stampIn{
+  0%{opacity:0;transform:translate(-50%,-50%) rotate(-10.5deg) scale(1.5)}
+  100%{opacity:.82;transform:translate(-50%,-50%) rotate(-10.5deg) scale(1)}
+}
 .pkg-boost{
   width:100%;
   display:flex;flex-direction:column;
@@ -1447,8 +1480,8 @@ position:relative;overflow:hidden;transition:color .35s}
     <div class="price-grid">
 
       <div class="pkg-col rv d1" data-pkg-col="start">
-        <div class="pkg-boost" role="group" aria-pressed="false" data-pkg="start">
-          <button type="button" class="pkg-boost-head" aria-pressed="false" aria-controls="pkg-boost-body-start" aria-label="Aktivera Meta-räckvidd för Videopaket">
+        <div class="pkg-boost is-locked" role="group" aria-pressed="false" aria-disabled="true" data-pkg="start"><span class="pkg-lock-stamp" aria-hidden="true">Inaktiverad</span>
+          <button type="button" class="pkg-boost-head" disabled tabindex="-1" aria-pressed="false" aria-controls="pkg-boost-body-start" aria-label="Aktivera Meta-räckvidd för Videopaket">
             <span class="pkg-boost-switch" aria-hidden="true"></span>
             <span class="pkg-boost-text">
               <span class="pkg-boost-tag">Valfritt &middot; <em>Rekommenderat</em></span>
@@ -1493,8 +1526,8 @@ position:relative;overflow:hidden;transition:color .35s}
 
       <!-- Kampanjpaket (featured) -->
       <div class="pkg-col featured rv d2" data-pkg-col="season">
-        <div class="pkg-boost" role="group" aria-pressed="false" data-pkg="season">
-          <button type="button" class="pkg-boost-head" aria-pressed="false" aria-controls="pkg-boost-body-season" aria-label="Aktivera Meta-räckvidd för Kampanjpaket">
+        <div class="pkg-boost is-locked" role="group" aria-pressed="false" aria-disabled="true" data-pkg="season"><span class="pkg-lock-stamp" aria-hidden="true">Inaktiverad</span>
+          <button type="button" class="pkg-boost-head" disabled tabindex="-1" aria-pressed="false" aria-controls="pkg-boost-body-season" aria-label="Aktivera Meta-räckvidd för Kampanjpaket">
             <span class="pkg-boost-switch" aria-hidden="true"></span>
             <span class="pkg-boost-text">
               <span class="pkg-boost-tag">Valfritt &middot; <em>Rekommenderat</em></span>
@@ -2194,6 +2227,7 @@ document.querySelectorAll('.gc,.lc,.sp-c').forEach(card=>{
     const pkg=wrapper.dataset.pkg;
     if(!pkg)return;
     headBtn.addEventListener('click',()=>{
+      if(wrapper.classList.contains('is-locked'))return;
       const wasActive=wrapper.getAttribute('aria-pressed')==='true';
       const next=!wasActive;
       wrapper.setAttribute('aria-pressed',next?'true':'false');
@@ -2299,6 +2333,7 @@ document.querySelectorAll('.gc,.lc,.sp-c').forEach(card=>{
   const sec=document.getElementById('sec-pr');
   const btn=document.querySelector('.pkg-col.featured .pkg-boost-head');
   if(!sec||!btn)return;
+  if(btn.closest('.pkg-boost')?.classList.contains('is-locked'))return;
 
   try{if(sessionStorage.getItem('guldbrev-boost-autoactivated')==='true')return}catch(e){}
   if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
